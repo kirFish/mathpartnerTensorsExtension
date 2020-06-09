@@ -1,9 +1,10 @@
 package tensors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TensorWorker implements TensorFunctions {
-
 
     //to add two tensors they must have the same indexes
     // if return null then the operation is not possible for input tensors
@@ -52,52 +53,118 @@ public class TensorWorker implements TensorFunctions {
         return null;
     }
 
+
     @Override
     public Tensor convolutionTensors(Tensor tensor) {
-        return null;
+
+        char[] sameIndexes;
+
+        if (tensor.existingIndexes[0] && tensor.existingIndexes[1]) {
+
+            sameIndexes = findSameIndex(tensor.leftTopCoefficients, tensor.leftBottomCoefficients);
+            tensor.leftTopCoefficients = formatArray(tensor.leftTopCoefficients, sameIndexes);
+            tensor.leftBottomCoefficients = formatArray(tensor.leftBottomCoefficients, sameIndexes);
+            tensor.rank = (byte) (tensor.rank - sameIndexes.length*2);
+        }
+
+        if (tensor.existingIndexes[2] && tensor.existingIndexes[3]) {
+
+            sameIndexes = findSameIndex(tensor.rightTopCoefficients, tensor.rightBottomCoefficients);
+            tensor.rightTopCoefficients = formatArray(tensor.rightTopCoefficients, sameIndexes);
+            tensor.rightBottomCoefficients = formatArray(tensor.rightBottomCoefficients, sameIndexes);
+            tensor.rank = (byte) (tensor.rank - getSameIndexesLength(sameIndexes)*2);
+        }
+
+
+        return tensor;
     }
 
 
-//    //if coefficient are the same they self-destruct in the "coefficientsConvolution method"
-//    private char[] addCorrespondingCoefficients(boolean ifRightCoefficient, char[] firstCoefficients, char[] secondCoefficients) {
+    /** CONVOLUTION BLOCK */
+    private char[] formatArray(char[] coefficients, char[] sameIndexes) {
+
+
+
+        int length = coefficients.length - getSameIndexesLength(sameIndexes);
+        char[] newIndexes = new char[length];
+
+        int newIndexesCounter = 0;
+
+        for (int i = 0; i < coefficients.length; i++) {
+
+            boolean ifToWrite = true;
+            for (int j = 0; j < sameIndexes.length ; j++) {
+
+                if(coefficients[i] == sameIndexes[j]){
+                    ifToWrite = false;
+                }
+
+
+            }
+
+            if(ifToWrite){
+
+                newIndexes[newIndexesCounter] = coefficients[i];
+                newIndexesCounter++;
+            }
+
+        }
+
+        return newIndexes;
+    }
+
+
+    private int getSameIndexesLength(char[] sameIndexes) {
+        int length = 0;
+
+        for (int i = 0; i < sameIndexes.length; i++) {
+
+            if(sameIndexes[i] != 0){
+                length++;
+            }
+        }
+
+        return length;
+    }
+
+
+    private char[] findSameIndex(char[] topCoefficients, char[] bottomCoefficients) {
+
+
+        List<Character> sameSymbols = new ArrayList<Character>();
+
+//        //choose whether the smallest array and init sameIndex length
+//        if (topCoefficients.length < bottomCoefficients.length) {
 //
-//        char[][] resultCoefficients = new char[2][firstCoefficients.length + secondCoefficients.length];
-//
-//
-//        //this index says if we write to right or left indexes at the result
-//        int firstResultIndex = 0;
-//        if (ifRightCoefficient) {
-//            firstResultIndex = 1;
-//
+//            sameSymbols = new char[topCoefficients.length];
+//        } else {
+//            sameSymbols = new char[bottomCoefficients.length];
 //        }
-//
-//        writeBottomCoefficients(resultCoefficients, firstResultIndex, firstCoefficients, secondCoefficients);
-//
-//        writeTopCoefficients(resultCoefficients, firstResultIndex, firstCoefficients, secondCoefficients);
-//
-//
-//        return resultCoefficients;
-//    }
 
 
-    private char[][] addTwoCharArray(char[][] resultCoefficients, int firstResultIndex, char[][] firstCoefficients, char[][] secondCoefficients) {
+        for (int i = 0; i < topCoefficients.length; i++) {
 
-        //writing the top coefficients
-        for (int resultCounter = 0; resultCounter < resultCoefficients.length; resultCounter++) {
+            char currentChar = topCoefficients[i];
+            for (int j = 0; j < bottomCoefficients.length; j++) {
 
-            if (resultCounter < firstCoefficients.length) {
-
-                resultCoefficients[firstResultIndex++][resultCounter] = firstCoefficients[1][resultCounter];
-            } else {
-                resultCoefficients[firstResultIndex++][resultCounter] = secondCoefficients[1][resultCounter];
+                if (bottomCoefficients[j] == currentChar) {
+                    sameSymbols.add(currentChar);
+                }
 
             }
         }
 
-        return resultCoefficients;
+        char[] sameSymbolArray = new char[sameSymbols.size()];
+
+        for(int i = 0; i < sameSymbols.size(); i++) {
+            sameSymbolArray[i] = sameSymbols.get(i);
+        }
+
+        return sameSymbolArray;
     }
 
 
+    /** ADDITION and SUBTRACTION BLOCK*/
     private char getNewTensorName(char firstName, char secondName) {
 
         firstName = (char) (firstName + 1);
@@ -132,7 +199,7 @@ public class TensorWorker implements TensorFunctions {
                 conditionsArray[0] = false;
             }
 
-        }else{
+        } else {
             conditionsArray[0] = !firstTensor.existingIndexes[0] && !secondTensor.existingIndexes[0];
         }
 
@@ -147,7 +214,7 @@ public class TensorWorker implements TensorFunctions {
                 conditionsArray[1] = false;
             }
 
-        }else{
+        } else {
             conditionsArray[1] = !firstTensor.existingIndexes[1] && !secondTensor.existingIndexes[1];
         }
 
@@ -162,7 +229,7 @@ public class TensorWorker implements TensorFunctions {
                 conditionsArray[2] = false;
             }
 
-        }else{
+        } else {
             conditionsArray[2] = !firstTensor.existingIndexes[2] && !secondTensor.existingIndexes[2];
         }
 
@@ -177,33 +244,20 @@ public class TensorWorker implements TensorFunctions {
                 conditionsArray[3] = false;
             }
 
-        }else{
+        } else {
             conditionsArray[3] = !firstTensor.existingIndexes[3] && !secondTensor.existingIndexes[3];
         }
-
-
 
         boolean conditionIsMet = conditionsArray[0] && conditionsArray[1] && conditionsArray[2] && conditionsArray[3];
 
         return conditionIsMet;
     }
 
-//    //deletes the sam-+e coefficients for the top and bottom on each side
-//    //works only for the right coefficients!!
-//    private char[][] coefficientsConvolution(char[][] resultCoefficients) {
-//
-//
-//        int[] sameCoeff;
-//        char[] rightTop = resultCoefficients[]
-//        char[] rightBottom = resultCoefficients[]
-//
-//        //find the indexes of the same if they exist
-//        for (int i = 0; i < resultCoefficients; i++) {
-//
-//        }
-//
-//
-//        return resultCoefficients;
-//    }
+
+    /**MULTIPLICATION*/
+    private char[] addTwoCharArray(char[] resultCoefficients, char[] firstCoefficients, char[] secondCoefficients) {
+
+        return null;
+    }
 
 }
