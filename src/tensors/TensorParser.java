@@ -14,6 +14,7 @@ public class TensorParser {
 
 
 
+
         return null;
     }
 
@@ -21,7 +22,7 @@ public class TensorParser {
     /**
      * @return Linked List of tokens but JUST FOR NOW - string
      * */
-    public LinkedList<String> outputParser(){
+    public Tensor[] outputParser(){
 
 
 

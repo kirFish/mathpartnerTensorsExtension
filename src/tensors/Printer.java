@@ -13,25 +13,25 @@ public class Printer {
         System.out.println("The rank of tensor is: " + tensor.rank);
 
         //left bottom index
-        if(tensor.leftCoefficients[0] !=null){
+        if(tensor.existingIndexes[0]){
 
-            System.out.println("Left bottom indexes:" + Arrays.toString(tensor.leftCoefficients[0]));
+            System.out.println("Left bottom indexes:" + Arrays.toString(tensor.leftBottomCoefficients));
         }
 
         //left top index
-        if(tensor.leftCoefficients[1] != null) {
-            System.out.println("Left top indexes:" + Arrays.toString(tensor.leftCoefficients[1]));
+        if(tensor.existingIndexes[0]) {
+            System.out.println("Left top indexes:" + Arrays.toString(tensor.leftTopCoefficients));
         }
 
 
         //right bottom index
-        if(tensor.rightCoefficients[0] != null){
-            System.out.println("Right bottom indexes:" + Arrays.toString(tensor.rightCoefficients[0]));
+        if(tensor.existingIndexes[0]){
+            System.out.println("Right bottom indexes:" + Arrays.toString(tensor.rightBottomCoefficients));
          }
 
         //right top index
-        if(tensor.rightCoefficients[1] != null) {
-            System.out.println("Right top indexes:" + Arrays.toString(tensor.rightCoefficients[1]));
+        if(tensor.existingIndexes[0]) {
+            System.out.println("Right top indexes:" + Arrays.toString(tensor.rightTopCoefficients));
         }
 
         System.out.println("\n");
