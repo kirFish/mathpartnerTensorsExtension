@@ -43,61 +43,134 @@ public class TensorWorker implements TensorFunctions {
         // right bottom = 2
         // right top = 3
 
-        if(firstTensor.existingIndexes[0] && secondTensor.existingIndexes[0]){
+        if (firstTensor.existingIndexes[0] && secondTensor.existingIndexes[0]) {
             String resultingIndex = Arrays.toString(firstTensor.leftBottomCoefficients) + Arrays.toString(secondTensor.leftBottomCoefficients);
-            resultTensor.leftBottomCoefficients = resultingIndex.toCharArray();
+            char[] readyIndexes  = clearUpIndexes(resultingIndex);
+            resultTensor.setLeftBottomCoefficients(readyIndexes);
         }
 
-        if(firstTensor.existingIndexes[1] && secondTensor.existingIndexes[1]){
+        if (firstTensor.existingIndexes[1] && secondTensor.existingIndexes[1]) {
             String resultingIndex = Arrays.toString(firstTensor.leftTopCoefficients) + Arrays.toString(secondTensor.leftTopCoefficients);
-            resultTensor.leftTopCoefficients = resultingIndex.toCharArray();
+            char[] readyIndexes  = clearUpIndexes(resultingIndex);
+            resultTensor.setLeftTopCoefficients(readyIndexes);
         }
 
-        if(firstTensor.existingIndexes[2] && secondTensor.existingIndexes[2]){
+        if (firstTensor.existingIndexes[2] && secondTensor.existingIndexes[2]) {
             String resultingIndex = Arrays.toString(firstTensor.rightBottomCoefficients) + Arrays.toString(secondTensor.rightBottomCoefficients);
-            resultTensor.rightBottomCoefficients = resultingIndex.toCharArray();
+            char[] readyIndexes  = clearUpIndexes(resultingIndex);
+            resultTensor.setRightBottomCoefficients(readyIndexes);
         }
 
-        if(firstTensor.existingIndexes[3] && secondTensor.existingIndexes[3]){
+        if (firstTensor.existingIndexes[3] && secondTensor.existingIndexes[3]) {
             String resultingIndex = Arrays.toString(firstTensor.rightTopCoefficients) + Arrays.toString(secondTensor.rightTopCoefficients);
-            resultTensor.rightTopCoefficients = resultingIndex.toCharArray();
+            char[] readyIndexes  = clearUpIndexes(resultingIndex);
+            resultTensor.setRightTopCoefficients(readyIndexes);
         }
 
-        if(firstTensor.existingIndexes[0] && !secondTensor.existingIndexes[0]){
-            resultTensor.leftBottomCoefficients = firstTensor.leftBottomCoefficients;
+        if (firstTensor.existingIndexes[0] && !secondTensor.existingIndexes[0]) {
+            resultTensor.setLeftBottomCoefficients(firstTensor.leftBottomCoefficients);
         }
 
-        if(!firstTensor.existingIndexes[0] && secondTensor.existingIndexes[0]){
-            resultTensor.leftBottomCoefficients = secondTensor.leftBottomCoefficients;
+        if (!firstTensor.existingIndexes[0] && secondTensor.existingIndexes[0]) {
+            resultTensor.setLeftBottomCoefficients(secondTensor.leftBottomCoefficients);
         }
 
-        if(firstTensor.existingIndexes[1] && !secondTensor.existingIndexes[1]){
-            resultTensor.leftTopCoefficients = firstTensor.leftTopCoefficients;
+        if (firstTensor.existingIndexes[1] && !secondTensor.existingIndexes[1]) {
+            resultTensor.setLeftTopCoefficients(firstTensor.leftTopCoefficients);
         }
 
-        if(!firstTensor.existingIndexes[1] && secondTensor.existingIndexes[1]){
-            resultTensor.leftTopCoefficients = secondTensor.leftTopCoefficients;
+        if (!firstTensor.existingIndexes[1] && secondTensor.existingIndexes[1]) {
+            resultTensor.setLeftTopCoefficients(secondTensor.leftTopCoefficients);
         }
 
-        if(firstTensor.existingIndexes[2] && !secondTensor.existingIndexes[2]){
-            resultTensor.rightBottomCoefficients = firstTensor.rightBottomCoefficients;
+        if (firstTensor.existingIndexes[2] && !secondTensor.existingIndexes[2]) {
+            resultTensor.setRightBottomCoefficients(firstTensor.rightBottomCoefficients);
         }
 
-        if(!firstTensor.existingIndexes[2] && secondTensor.existingIndexes[2]){
-            resultTensor.rightBottomCoefficients = secondTensor.rightBottomCoefficients;
+        if (!firstTensor.existingIndexes[2] && secondTensor.existingIndexes[2]) {
+            resultTensor.setRightBottomCoefficients(secondTensor.rightBottomCoefficients);
         }
 
-        if(firstTensor.existingIndexes[3] && !secondTensor.existingIndexes[3]){
-            resultTensor.rightTopCoefficients = firstTensor.rightTopCoefficients;
+        if (firstTensor.existingIndexes[3] && !secondTensor.existingIndexes[3]) {
+            resultTensor.setRightTopCoefficients(firstTensor.rightTopCoefficients);
         }
 
-        if(!firstTensor.existingIndexes[3] && secondTensor.existingIndexes[3]){
-            resultTensor.rightTopCoefficients = secondTensor.rightTopCoefficients;
+        if (!firstTensor.existingIndexes[3] && secondTensor.existingIndexes[3]) {
+            resultTensor.setRightTopCoefficients(secondTensor.rightTopCoefficients);
         }
+
 
         resultTensor = convolutionTensors(resultTensor);
+        resultTensor.rank = getNewTensorRank(resultTensor);
+        resultTensor.existingIndexes = fetchExistingIndexes(resultTensor);
 
         return resultTensor;
+    }
+
+
+    private boolean[] fetchExistingIndexes(Tensor resultTensor) {
+
+        boolean[] newConditions = new boolean[4];
+
+        if(resultTensor.leftBottomCoefficients !=  null){
+            newConditions[0] = true;
+        }
+
+
+        if(resultTensor.leftTopCoefficients !=  null){
+            newConditions[1] = true;
+        }
+
+
+        if(resultTensor.rightBottomCoefficients !=  null){
+            newConditions[2] = true;
+        }
+
+
+        if(resultTensor.rightTopCoefficients !=  null){
+            newConditions[3] = true;
+        }
+
+
+        return newConditions;
+    }
+
+
+    private char[] clearUpIndexes(String resultingIndex) {
+
+        ArrayList<Character> list = new ArrayList<>();
+        char[] array = resultingIndex.toCharArray();
+
+        for (int i = 0; i < array.length; i++) {
+
+            if(array[i] !='[' && array[i] !='['){
+
+                list.add(array[i]);
+            }
+        }
+
+        return arrayListToCharArray(list);
+    }
+
+
+    private byte getNewTensorRank(Tensor resultTensor) {
+
+        int length = 0;
+
+        if(resultTensor.leftBottomCoefficients != null){
+            length += resultTensor.leftBottomCoefficients.length;
+        }
+        if(resultTensor.leftTopCoefficients != null){
+            length += resultTensor.leftTopCoefficients.length;
+        }
+        if(resultTensor.rightBottomCoefficients != null){
+            length += resultTensor.rightBottomCoefficients.length;
+        }
+        if(resultTensor.rightTopCoefficients != null){
+            length += resultTensor.rightTopCoefficients.length;
+        }
+
+        return (byte) length;
     }
 
 
@@ -111,7 +184,7 @@ public class TensorWorker implements TensorFunctions {
             sameIndexes = findSameIndex(tensor.leftTopCoefficients, tensor.leftBottomCoefficients);
             tensor.leftTopCoefficients = formatArray(tensor.leftTopCoefficients, sameIndexes);
             tensor.leftBottomCoefficients = formatArray(tensor.leftBottomCoefficients, sameIndexes);
-            tensor.rank = (byte) (tensor.rank - sameIndexes.length*2);
+            tensor.rank = (byte) (tensor.rank - sameIndexes.length * 2);
         }
 
         if (tensor.existingIndexes[2] && tensor.existingIndexes[3]) {
@@ -119,7 +192,7 @@ public class TensorWorker implements TensorFunctions {
             sameIndexes = findSameIndex(tensor.rightTopCoefficients, tensor.rightBottomCoefficients);
             tensor.rightTopCoefficients = formatArray(tensor.rightTopCoefficients, sameIndexes);
             tensor.rightBottomCoefficients = formatArray(tensor.rightBottomCoefficients, sameIndexes);
-            tensor.rank = (byte) (tensor.rank - getSameIndexesLength(sameIndexes)*2);
+            tensor.rank = (byte) (tensor.rank - getSameIndexesLength(sameIndexes) * 2);
         }
 
 
@@ -127,37 +200,37 @@ public class TensorWorker implements TensorFunctions {
     }
 
 
-    /** CONVOLUTION BLOCK */
+    /**
+     * CONVOLUTION BLOCK
+     */
     private char[] formatArray(char[] coefficients, char[] sameIndexes) {
 
-
-
-        int length = coefficients.length - getSameIndexesLength(sameIndexes);
-        char[] newIndexes = new char[length];
-
-        int newIndexesCounter = 0;
+        List<Character> newIndexes = new ArrayList<Character>();
 
         for (int i = 0; i < coefficients.length; i++) {
 
             boolean ifToWrite = true;
-            for (int j = 0; j < sameIndexes.length ; j++) {
+            for (int j = 0; j < sameIndexes.length; j++) {
 
-                if(coefficients[i] == sameIndexes[j]){
+                if (coefficients[i] == sameIndexes[j]) {
                     ifToWrite = false;
                 }
 
 
             }
 
-            if(ifToWrite){
+            if (ifToWrite) {
 
-                newIndexes[newIndexesCounter] = coefficients[i];
-                newIndexesCounter++;
+                newIndexes.add(coefficients[i]);
             }
-
         }
 
-        return newIndexes;
+
+        if(newIndexes.size() == 0){
+            return null;
+        }else {
+            return arrayListToCharArray(newIndexes);
+        }
     }
 
 
@@ -166,7 +239,7 @@ public class TensorWorker implements TensorFunctions {
 
         for (int i = 0; i < sameIndexes.length; i++) {
 
-            if(sameIndexes[i] != 0){
+            if (sameIndexes[i] != 0) {
                 length++;
             }
         }
@@ -180,15 +253,6 @@ public class TensorWorker implements TensorFunctions {
 
         List<Character> sameSymbols = new ArrayList<Character>();
 
-//        //choose whether the smallest array and init sameIndex length
-//        if (topCoefficients.length < bottomCoefficients.length) {
-//
-//            sameSymbols = new char[topCoefficients.length];
-//        } else {
-//            sameSymbols = new char[bottomCoefficients.length];
-//        }
-
-
         for (int i = 0; i < topCoefficients.length; i++) {
 
             char currentChar = topCoefficients[i];
@@ -201,17 +265,13 @@ public class TensorWorker implements TensorFunctions {
             }
         }
 
-        char[] sameSymbolArray = new char[sameSymbols.size()];
-
-        for(int i = 0; i < sameSymbols.size(); i++) {
-            sameSymbolArray[i] = sameSymbols.get(i);
-        }
-
-        return sameSymbolArray;
+        return arrayListToCharArray(sameSymbols);
     }
 
 
-    /** ADDITION and SUBTRACTION BLOCK*/
+    /**
+     * ADDITION and SUBTRACTION BLOCK
+     */
     private char getNewTensorName(char firstName, char secondName) {
 
         firstName = (char) (firstName + 1);
@@ -299,10 +359,14 @@ public class TensorWorker implements TensorFunctions {
     }
 
 
-    /**MULTIPLICATION*/
-    private char[] addTwoCharArray(char[] resultCoefficients, char[] firstCoefficients, char[] secondCoefficients) {
+    private char[] arrayListToCharArray(List<Character> list) {
 
-        return null;
+        char[] array = new char[list.size()];
+
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+
+        return array;
     }
-
 }
