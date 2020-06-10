@@ -2,9 +2,6 @@ package tensors;
 
 import org.junit.Before;
 import org.junit.Test;
-import tensors.Tensor;
-import tensors.TensorFunctions;
-import tensors.TensorWorker;
 
 import java.util.Arrays;
 
@@ -18,17 +15,20 @@ public class TensorWorkerTest {
     Tensor fourthTensor;
     Tensor fifthTensor;
 
+
+
     TensorWorker tensorWorker = new TensorWorker();
+
 
     @Before
     public void initTensors(){
 
-        firstTensor = new Tensor('C', (byte)2);
-        secondTensor = new Tensor('D', (byte)2);
-        thirdTensor = new Tensor('E', (byte)2);
+        firstTensor = new Tensor('C');
+        secondTensor = new Tensor('D');
+        thirdTensor = new Tensor('E');
 
-        fourthTensor = new Tensor('A', (byte) 20);
-        fifthTensor = new Tensor('A', (byte) 12);
+        fourthTensor = new Tensor('A');
+        fifthTensor = new Tensor('A');
 
         char[] TopCoefficientsBasic = {'x','a','m','n','o'};
         char[] BottomCoefficientsBasic = {'m','o','f','l','k'};
@@ -36,23 +36,37 @@ public class TensorWorkerTest {
         char[] TopCoefficientsResult = {'x','a','n'};
         char[] BottomCoefficientsResult = {'f','l','k'};
 
-        char[] rightTopCoefficients = {'x'};
-        char[] rightBottomCoefficients = {'m'};
+        char[] ShortTopCoefficients = {'x','m'};
+        char[] ShortBottomCoefficients = {'m'};
 
-        firstTensor.setRightTopCoefficients(rightTopCoefficients);
-        firstTensor.setRightBottomCoefficients(rightBottomCoefficients);
+        //1
+        firstTensor.setRightTopCoefficients(ShortTopCoefficients);
+        firstTensor.setRightBottomCoefficients(ShortBottomCoefficients);
+        firstTensor.setLeftTopCoefficients(ShortTopCoefficients);
+        firstTensor.setLeftBottomCoefficients(ShortBottomCoefficients);
 
-        secondTensor.setRightTopCoefficients(rightTopCoefficients);
-        secondTensor.setRightBottomCoefficients(rightBottomCoefficients);
+        //2
+        secondTensor.setRightTopCoefficients(ShortTopCoefficients);
+        secondTensor.setRightBottomCoefficients(ShortBottomCoefficients);
+        secondTensor.setLeftTopCoefficients(ShortTopCoefficients);
+        secondTensor.setLeftBottomCoefficients(ShortBottomCoefficients);
 
-        thirdTensor.setRightTopCoefficients(rightTopCoefficients);
-        thirdTensor.setRightBottomCoefficients(rightBottomCoefficients);
 
+        //3
+        thirdTensor.setRightTopCoefficients(ShortTopCoefficients);
+        thirdTensor.setRightBottomCoefficients(ShortBottomCoefficients);
+        thirdTensor.setLeftTopCoefficients(ShortTopCoefficients);
+        thirdTensor.setLeftBottomCoefficients(ShortBottomCoefficients);
+
+
+        //4
         fourthTensor.setRightTopCoefficients(TopCoefficientsBasic);
         fourthTensor.setRightBottomCoefficients(BottomCoefficientsBasic);
         fourthTensor.setLeftTopCoefficients(TopCoefficientsBasic);
         fourthTensor.setLeftBottomCoefficients(BottomCoefficientsBasic);
 
+
+        //5
         fifthTensor.setRightTopCoefficients(TopCoefficientsResult);
         fifthTensor.setRightBottomCoefficients(BottomCoefficientsResult);
         fifthTensor.setLeftTopCoefficients(TopCoefficientsResult);
@@ -66,9 +80,11 @@ public class TensorWorkerTest {
     public void addTensors() {
 
         Tensor resultTensor = tensorWorker.addTensors(firstTensor, secondTensor);
-        assertEquals(thirdTensor.name, resultTensor.name);
-        assertEquals(thirdTensor.rank, resultTensor.rank);
-        System.out.println(Arrays.equals(thirdTensor.existingIndexes, tensorWorker.addTensors(firstTensor,secondTensor).existingIndexes));
+        if(resultTensor != null){
+            assertEquals(thirdTensor.name, resultTensor.name);
+            assertEquals(thirdTensor.rank, resultTensor.rank);
+            assertArrayEquals(thirdTensor.existingIndexes, resultTensor.existingIndexes);
+        }
     }
 
 
@@ -76,17 +92,19 @@ public class TensorWorkerTest {
     public void subtractTensors() {
 
         Tensor resultTensor = tensorWorker.subtractTensors(firstTensor, secondTensor);
-        assertEquals(thirdTensor.name, resultTensor.name);
-        assertEquals(thirdTensor.rank, resultTensor.rank);
-        System.out.println(Arrays.equals(thirdTensor.existingIndexes, resultTensor.existingIndexes));
+        if(resultTensor != null) {
+            assertEquals(thirdTensor.name, resultTensor.name);
+            assertEquals(thirdTensor.rank, resultTensor.rank);
+            assertArrayEquals(thirdTensor.existingIndexes, resultTensor.existingIndexes);
+        }
     }
-
 
 
     @Test
     public void convolutionTensors() {
 
         Tensor resultTensor = tensorWorker.convolutionTensors(fourthTensor);
+
         assertEquals(fifthTensor.name, resultTensor.name);
         assertEquals(fifthTensor.rank, resultTensor.rank);
         assertArrayEquals(fifthTensor.existingIndexes, resultTensor.existingIndexes);
@@ -134,6 +152,33 @@ public class TensorWorkerTest {
         assertEquals(true, ifValuesEqual);
 
         */
+
+    }
+
+
+    @Test
+    public void multiplyTensors() {
+
+        //3
+        thirdTensor.setRightTopCoefficients(new char[]{'m'});
+        thirdTensor.setRightBottomCoefficients(new char[]{'m'});
+        thirdTensor.setLeftTopCoefficients(new char[]{'x'});
+        thirdTensor.setLeftBottomCoefficients(new char[]{'x'});
+
+        //4
+        fourthTensor.setRightTopCoefficients(new char[]{'x'});
+        fourthTensor.setRightBottomCoefficients(new char[]{'x'});
+        fourthTensor.setLeftTopCoefficients(new char[]{'x'});
+        fourthTensor.setLeftBottomCoefficients(new char[]{'x'});
+
+
+        //5
+        fifthTensor.setRightTopCoefficients(new char[]{'x','m'});
+        fifthTensor.setRightBottomCoefficients(new char[]{'m'});
+        fifthTensor.setLeftTopCoefficients(new char[]{'m'});
+        fifthTensor.setLeftBottomCoefficients(new char[]{'m'});
+
+        Tensor resultTensor = tensorWorker.multiplyTensors(firstTensor,secondTensor);
 
     }
 

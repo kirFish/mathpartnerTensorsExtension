@@ -6,8 +6,6 @@ import java.util.List;
 
 public class TensorWorker implements TensorFunctions {
 
-    //to add two tensors they must have the same indexes
-    // if return null then the operation is not possible for input tensors
     @Override
     public Tensor addTensors(Tensor firstTensor, Tensor secondTensor) {
 
@@ -21,7 +19,6 @@ public class TensorWorker implements TensorFunctions {
     }
 
 
-    //to subtract two tensors they must have the same indexes
     @Override
     public Tensor subtractTensors(Tensor firstTensor, Tensor secondTensor) {
 
@@ -37,20 +34,70 @@ public class TensorWorker implements TensorFunctions {
 
     @Override
     public Tensor multiplyTensors(Tensor firstTensor, Tensor secondTensor) {
-//
-//        Tensor resultTensor = new Tensor('A', (byte) 0);
-//
-//
-//        resultTensor.rightBottomCoefficients =
-//                addCorrespondingCoefficients(true, firstTensor.rightBottomCoefficients, secondTensor.rightBottomCoefficients);
-//
-//        resultTensor.rightTopCoefficients =
-//                addCorrespondingCoefficients(true, firstTensor.rightBottomCoefficients, secondTensor.rightBottomCoefficients);
-//
-//        resultTensor.rank = (byte) (firstTensor.rank + secondTensor.rank);
-//
 
-        return null;
+
+        Tensor resultTensor = new Tensor(getNewTensorName(firstTensor.name, secondTensor.name));
+
+        // left bottom = 0
+        // left top = 1
+        // right bottom = 2
+        // right top = 3
+
+        if(firstTensor.existingIndexes[0] && secondTensor.existingIndexes[0]){
+            String resultingIndex = Arrays.toString(firstTensor.leftBottomCoefficients) + Arrays.toString(secondTensor.leftBottomCoefficients);
+            resultTensor.leftBottomCoefficients = resultingIndex.toCharArray();
+        }
+
+        if(firstTensor.existingIndexes[1] && secondTensor.existingIndexes[1]){
+            String resultingIndex = Arrays.toString(firstTensor.leftTopCoefficients) + Arrays.toString(secondTensor.leftTopCoefficients);
+            resultTensor.leftTopCoefficients = resultingIndex.toCharArray();
+        }
+
+        if(firstTensor.existingIndexes[2] && secondTensor.existingIndexes[2]){
+            String resultingIndex = Arrays.toString(firstTensor.rightBottomCoefficients) + Arrays.toString(secondTensor.rightBottomCoefficients);
+            resultTensor.rightBottomCoefficients = resultingIndex.toCharArray();
+        }
+
+        if(firstTensor.existingIndexes[3] && secondTensor.existingIndexes[3]){
+            String resultingIndex = Arrays.toString(firstTensor.rightTopCoefficients) + Arrays.toString(secondTensor.rightTopCoefficients);
+            resultTensor.rightTopCoefficients = resultingIndex.toCharArray();
+        }
+
+        if(firstTensor.existingIndexes[0] && !secondTensor.existingIndexes[0]){
+            resultTensor.leftBottomCoefficients = firstTensor.leftBottomCoefficients;
+        }
+
+        if(!firstTensor.existingIndexes[0] && secondTensor.existingIndexes[0]){
+            resultTensor.leftBottomCoefficients = secondTensor.leftBottomCoefficients;
+        }
+
+        if(firstTensor.existingIndexes[1] && !secondTensor.existingIndexes[1]){
+            resultTensor.leftTopCoefficients = firstTensor.leftTopCoefficients;
+        }
+
+        if(!firstTensor.existingIndexes[1] && secondTensor.existingIndexes[1]){
+            resultTensor.leftTopCoefficients = secondTensor.leftTopCoefficients;
+        }
+
+        if(firstTensor.existingIndexes[2] && !secondTensor.existingIndexes[2]){
+            resultTensor.rightBottomCoefficients = firstTensor.rightBottomCoefficients;
+        }
+
+        if(!firstTensor.existingIndexes[2] && secondTensor.existingIndexes[2]){
+            resultTensor.rightBottomCoefficients = secondTensor.rightBottomCoefficients;
+        }
+
+        if(firstTensor.existingIndexes[3] && !secondTensor.existingIndexes[3]){
+            resultTensor.rightTopCoefficients = firstTensor.rightTopCoefficients;
+        }
+
+        if(!firstTensor.existingIndexes[3] && secondTensor.existingIndexes[3]){
+            resultTensor.rightTopCoefficients = secondTensor.rightTopCoefficients;
+        }
+
+        resultTensor = convolutionTensors(resultTensor);
+
+        return resultTensor;
     }
 
 
@@ -248,9 +295,7 @@ public class TensorWorker implements TensorFunctions {
             conditionsArray[3] = !firstTensor.existingIndexes[3] && !secondTensor.existingIndexes[3];
         }
 
-        boolean conditionIsMet = conditionsArray[0] && conditionsArray[1] && conditionsArray[2] && conditionsArray[3];
-
-        return conditionIsMet;
+        return conditionsArray[0] && conditionsArray[1] && conditionsArray[2] && conditionsArray[3];
     }
 
 
